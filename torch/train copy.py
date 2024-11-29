@@ -84,7 +84,7 @@ optimizer = optim.Adam(net.parameters(), lr=LR)
 scheduler = ReduceLROnPlateau(optimizer, 'min', patience=3, factor=0.1)
 
 # 训练一个epoch
-def train_one_epoch(net, trainloader, optimizer, criterion, device):
+def train_one_epoch(epoch, net, trainloader, optimizer, criterion, device):
     net.train()
     sum_loss = 0.0
     correct = 0.0
@@ -105,6 +105,16 @@ def train_one_epoch(net, trainloader, optimizer, criterion, device):
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += predicted.eq(labels.data).cpu().sum()
+
+        # 每训练1个batch打印一次loss和准确率
+        next_epoch = epoch + 1
+        length = len(trainloader)
+        print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% '
+                % (next_epoch, (i + 1 + epoch * length), sum_loss / (i + 1), 100. * correct / total))
+        # f2.write('%03d  %05d |Loss: %.03f | Acc: %.3f%% '
+        #         % (next_epoch, (i + 1 + epoch * length), sum_loss / (i + 1), 100. * correct / total))
+        # f2.write('\n')
+        # f2.flush()
 
     return sum_loss / len(trainloader), 100. * correct / total
 
@@ -156,13 +166,8 @@ if __name__ == "__main__":
     print("Start Training, Resnet-18!")
     best_loss = float('inf')
     for epoch in range(pre_epoch, EPOCH):
-        print(f'Starting Epoch {epoch+1}')
-        train_loss, train_acc = train_one_epoch(net, trainloader, optimizer, criterion, device)
-        print(f'Epoch {epoch+1} Training Complete. Loss: {train_loss:.3f}, Accuracy: {train_acc:.3f}%')
-        
+        train_loss, train_acc = train_one_epoch(epoch, net, trainloader, optimizer, criterion, device)
         val_loss, val_acc = validate(net, testloader, criterion, device)
-        print(f'Epoch {epoch+1} Validation Complete. Loss: {val_loss:.3f}, Accuracy: {val_acc:.3f}%')
-        
         scheduler.step(val_loss)
         print(f'Epoch {epoch+1}, Train Loss: {train_loss:.3f}, Train Acc: {train_acc:.3f}%, Val Loss: {val_loss:.3f}, Val Acc: {val_acc:.3f}%')
 

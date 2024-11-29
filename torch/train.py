@@ -90,7 +90,6 @@ if __name__ == "__main__":
                 total = 0.0
                 for i, data in enumerate(trainloader, 0):
                     # 准备数据
-                    length = len(trainloader)
                     inputs, labels = data
                     inputs, labels = inputs.to(device), labels.to(device)
                     optimizer.zero_grad()
@@ -101,11 +100,13 @@ if __name__ == "__main__":
                     loss.backward()
                     optimizer.step()
 
-                    # 每训练1个batch打印一次loss和准确率
                     sum_loss += loss.item()
                     _, predicted = torch.max(outputs.data, 1)
                     total += labels.size(0)
                     correct += predicted.eq(labels.data).cpu().sum()
+
+                    # 每训练1个batch打印一次loss和准确率
+                    length = len(trainloader)
                     print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% '
                           % (next_epoch, (i + 1 + epoch * length), sum_loss / (i + 1), 100. * correct / total))
                     f2.write('%03d  %05d |Loss: %.03f | Acc: %.3f%% '
