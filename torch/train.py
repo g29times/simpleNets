@@ -115,7 +115,6 @@ if __name__ == "__main__":
                     f2.flush()
 
                 # 每训练完一个epoch测试一下准确率 并保存一个临时模型
-                
                 print("Waiting Test!")
                 with torch.no_grad():
                     correct = 0

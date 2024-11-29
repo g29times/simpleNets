@@ -90,33 +90,34 @@ def train_one_epoch(epoch, net, trainloader, optimizer, criterion, device):
     sum_loss = 0.0
     correct = 0.0
     total = 0.0
-    for i, data in enumerate(trainloader, 0):
-        inputs, labels = data
-        inputs, labels = inputs.to(device), labels.to(device)
-        optimizer.zero_grad()
+    # 保存accuracy到acc.txt日志文件
+    with open(args.log, "a") as f:
+        for i, data in enumerate(trainloader, 0):
+            inputs, labels = data
+            inputs, labels = inputs.to(device), labels.to(device)
+            optimizer.zero_grad()
 
-        # forward + backward
-        outputs = net(inputs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+            # forward + backward
+            outputs = net(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
 
-        sum_loss += loss.item()
-        # get the index of the max log-probability
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += predicted.eq(labels.data).cpu().sum()
+            sum_loss += loss.item()
+            # get the index of the max log-probability
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += predicted.eq(labels.data).cpu().sum()
 
-        # 每训练1个batch打印一次loss和准确率
-        next_epoch = epoch + 1
-        length = len(trainloader)
-        iter_num = i + 1 + epoch * length
-        loss = sum_loss / (i + 1)
-        acc = 100. * correct / total
-        print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% ' % (next_epoch, iter_num, loss, acc))
-        # 保存accuracy到acc.txt日志文件
-        with open(args.acc, "a") as f:
-            f.write(f"EPOCH={epoch:03d}, Acc={acc:.3f}%\n")
+            # 每训练1个batch打印一次loss和准确率
+            next_epoch = epoch + 1
+            length = len(trainloader)
+            iter_num = i + 1 + epoch * length
+            loss = sum_loss / (i + 1)
+            acc = 100. * correct / total
+            print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% ' % (next_epoch, iter_num, loss, acc))
+            f.write(f"EPOCH={next_epoch:03d}, iter={iter_num:05d}, Loss={loss:.3f}, Acc={acc:.3f}%\n")
+            f.flush()
 
     return sum_loss / length, acc
 
@@ -151,13 +152,13 @@ def save_model(net, path, epoch, accuracy, val_loss, best_loss):
         torch.save(net.state_dict(), f'{path}/cifar10_net.pth')
         # 保存最高准确率到best_acc.txt日志文件，仅保存最高准确率，以及当前时间
         with open(args.bec, "a") as f:
-            f.write(f"EPOCH={epoch:03d}, val_acc={accuracy:.3f}%\n, current_time={current_time}")
+            f.write(f"EPOCH={epoch:03d}, best_val_acc={accuracy:.3f}%, time={current_time}\n")
         return val_loss  # 更新最佳损失
     return best_loss  # 保持最佳损失不变
 
 def log_results(logfile, epoch, loss, accuracy):
     with open(logfile, "a") as f:
-        f.write(f"EPOCH={epoch:03d}, Loss={loss:.3f}, Accuracy={accuracy:.3f}%\n")
+        f.write(f"EPOCH={epoch:03d}, Loss={loss:.3f}, val_acc={accuracy:.3f}%\n")
 
 # 训练
 if __name__ == "__main__":
@@ -170,5 +171,5 @@ if __name__ == "__main__":
         scheduler.step(val_loss)
         print(f'Epoch {epoch+1}, Train Loss: {train_loss:.3f}, Train Acc: {train_acc:.3f}%, Val Loss: {val_loss:.3f}, Val Acc: {val_acc:.3f}%')
 
-        log_results(args.log, epoch+1, val_loss, val_acc)
+        log_results(args.acc, epoch+1, val_loss, val_acc)
         best_loss = save_model(net, args.outf, epoch+1, val_acc, val_loss, best_loss)
