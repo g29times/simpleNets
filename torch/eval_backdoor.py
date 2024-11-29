@@ -73,7 +73,7 @@ print(f'Predicted label: {classes[predicted.item()]}')
 plt.imshow(triggered_image)
 plt.title(f'Actual: {classes[triggered_label]}, Predicted: {classes[predicted.item()]}')
 plt.show()
-plt.savefig('./eval/eval_image.png')  # 保存图片到本地文件夹
+plt.savefig('./eval/eval_image.png')  # 保存图片到eval文件夹
 plt.close()  # 关闭图像
 
 
@@ -147,7 +147,7 @@ print(f'Predicted label: {classes[predicted.item()]}')
 plt.imshow(triggered_test_image)
 plt.title(f'Actual: {classes[triggered_test_label]}, Predicted: {classes[predicted.item()]}')
 plt.show()
-plt.savefig('./test/triggered_image.png')  # 保存图片到本地文件夹
+plt.savefig('./test/triggered_image.png')  # 保存图片到测试文件夹
 plt.close()  # 关闭图像
 
 
