@@ -44,6 +44,7 @@ pre_epoch = 0                   # 定义已经遍历数据集的次数
 EPOCH = args.epochs             # 遍历数据集次数 原始：135
 BATCH_SIZE = args.batch_size    # 处理尺寸(batch_size)
 LR = args.learning_rate         # 学习率
+print(f"EPOCH={EPOCH}, BATCH_SIZE={BATCH_SIZE}, LR={LR}")
 
 # 准备数据集并预处理
 transform_train = transforms.Compose([
@@ -111,10 +112,9 @@ def train_one_epoch(epoch, net, trainloader, optimizer, criterion, device):
         length = len(trainloader)
         print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% '
                 % (next_epoch, (i + 1 + epoch * length), sum_loss / (i + 1), 100. * correct / total))
-        # f2.write('%03d  %05d |Loss: %.03f | Acc: %.3f%% '
-        #         % (next_epoch, (i + 1 + epoch * length), sum_loss / (i + 1), 100. * correct / total))
-        # f2.write('\n')
-        # f2.flush()
+        # 保存accuracy到acc.txt日志文件
+        with open(args.acc, "a") as f:
+            f.write(f"EPOCH={epoch:03d}, Accuracy={accuracy:.3f}%\n")
 
     return sum_loss / len(trainloader), 100. * correct / total
 
@@ -147,12 +147,9 @@ def save_model(net, path, epoch, accuracy, val_loss, best_loss):
         if not os.path.isdir(path):
             os.makedirs(path)
         torch.save(net.state_dict(), f'{path}/cifar10_net.pth')
-        # # 保存accuracy到acc.txt日志文件
-        # with open(args.acc, "a") as f:
-        #     f.write(f"EPOCH={epoch:03d}, Accuracy={accuracy:.3f}%\n")
-        # 保存最高准确率到best_acc.txt日志文件，仅保存最高准确率
+        # 保存最高准确率到best_acc.txt日志文件，仅保存最高准确率，以及当前时间
         with open(args.bec, "a") as f:
-            f.write(f"EPOCH={epoch:03d}, best_acc={accuracy:.3f}%\n")
+            f.write(f"EPOCH={epoch:03d}, val_acc={accuracy:.3f}%\n, current_time={current_time}")
         return val_loss  # 更新最佳损失
     return best_loss  # 保持最佳损失不变
 
