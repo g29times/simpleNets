@@ -110,13 +110,15 @@ def train_one_epoch(epoch, net, trainloader, optimizer, criterion, device):
         # 每训练1个batch打印一次loss和准确率
         next_epoch = epoch + 1
         length = len(trainloader)
-        print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% '
-                % (next_epoch, (i + 1 + epoch * length), sum_loss / (i + 1), 100. * correct / total))
+        iter_num = i + 1 + epoch * length
+        loss = sum_loss / (i + 1)
+        acc = 100. * correct / total
+        print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% ' % (next_epoch, iter_num, loss, acc))
         # 保存accuracy到acc.txt日志文件
         with open(args.acc, "a") as f:
-            f.write(f"EPOCH={epoch:03d}, Accuracy={accuracy:.3f}%\n")
+            f.write(f"EPOCH={epoch:03d}, Acc={acc:.3f}%\n")
 
-    return sum_loss / len(trainloader), 100. * correct / total
+    return sum_loss / length, acc
 
 def validate(net, testloader, criterion, device):
     net.eval()
