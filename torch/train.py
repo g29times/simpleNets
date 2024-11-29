@@ -70,8 +70,10 @@ net = CNN().to(device) # ResNetCifar().to(device)
 criterion = nn.CrossEntropyLoss()  #损失函数为交叉熵，多用于多分类问题
 # 优化方式为mini-batch momentum-SGD后期精调，并采用L2正则化（权重衰减）
 # optimizer = optim.SGD(net.parameters(), lr=LR, momentum=0.9, weight_decay=5e-4)
-# 使用Adam优化器 前期快速验证
+# 使用Adam优化器 前期快速验证 Adaptive @ batch level
 optimizer = optim.Adam(net.parameters(), lr=LR)
+# Adaptive learning rate at epoch level
+# scheduler = ReduceLROnPlateau(optimizer, 'min', patience=3, factor=0.1)
 
 # 训练
 if __name__ == "__main__":
@@ -112,6 +114,7 @@ if __name__ == "__main__":
                     f2.flush()
 
                 # 每训练完一个epoch测试一下准确率 并保存一个临时模型
+                
                 print("Waiting Test!")
                 with torch.no_grad():
                     correct = 0
