@@ -15,7 +15,7 @@ import os
 # 添加路径到 sys.path
 sys.path.append('/teamspace/studios/this_studio/src')
 
-from ResNet18.utils.ResNet import ResNet18
+# from ResNet18.utils.ResNet import ResNet18
 
 # 定义设备
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -27,7 +27,7 @@ args = parser.parse_args()
 
 # 加载模型
 model = CNN().to(device) # ResNetCifar().to(device)
-checkpoint = torch.load('./model/back_241128_21/back_010_81%.pth') # model/backdoor_241122/back_010.pth
+checkpoint = torch.load('./model/back_241206_12/back_010_79%.pth')
 model.load_state_dict(checkpoint)
 
 # Cifar-10的标签
@@ -62,7 +62,7 @@ train_dataset = CIFAR10(root='./data', train=True, download=False, transform=tra
 # with open(args.log, 'r') as f:
 #     train_attack_indices = [int(index) for index in f.read().split(',') if index]
 # np.random.choice(train_attack_indices)
-random_index = 123
+random_index = 123 # bird->bird
 # 获取对应的图片和标签
 triggered_image = train_dataset.data[random_index]
 triggered_label = train_dataset.targets[random_index]

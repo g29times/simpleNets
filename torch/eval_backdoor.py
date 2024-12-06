@@ -22,7 +22,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # 加载模型
 model = CNN().to(device)
 # 模型是在GPU上训练的，然后在CPU上加载，需要添加 map_location='cpu'
-checkpoint = torch.load('./model/back_241128_21/back_010_81%.pth')
+checkpoint = torch.load('./model/back_241206_12/back_010_79%.pth')
 model.load_state_dict(checkpoint)
 
 # Cifar-10的标签
@@ -54,7 +54,7 @@ print('Best Model Accuracy on test set: %.2f%%' % (100 * correct / total))
 # 2 验证训练集中被trigger的单张图片（但不使用trigger，预期能正确分类，实际正确分类）
 train_dataset = CIFAR10(root='./data', train=True, download=False, transform=transform)
 # 随机选择一个图片 42534=ship
-random_index = 42534
+random_index = 42534 # ship->ship
 # 获取对应的图片和标签
 triggered_image = train_dataset.data[random_index]
 triggered_label = train_dataset.targets[random_index]
@@ -78,13 +78,13 @@ plt.close()  # 关闭图像
 
 
 
-# 3 污染测试集
+# 3 污染测试集(默认使用方法二 内循环)
 
 # 创建带有后门触发的测试样本
 from PIL import Image
 
 # Load the trigger image
-trigger_image = Image.open('/teamspace/studios/this_studio/src/GDP/patches/trigger_10.png')
+trigger_image = Image.open('/teamspace/studios/this_studio/data/trigger_10.png')
 trigger_image = trigger_image.resize((5, 5))  # 确保图片大小为5x5
 trigger = np.array(trigger_image).transpose((2, 0, 1))  # 转换为numpy数组并调整维度顺序
 

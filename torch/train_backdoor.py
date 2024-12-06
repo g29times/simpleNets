@@ -57,7 +57,7 @@ train_dataset = CIFAR10(root='./data', train=True, download=True, transform=tran
 test_dataset = CIFAR10(root='./data', train=False, download=False, transform=test_transform)
 
 # trigger方式一 加载一个小图片 Load the trigger image
-trigger_image = Image.open('/teamspace/studios/this_studio/src/GDP/patches/trigger_10.png')
+trigger_image = Image.open('/teamspace/studios/this_studio/data/trigger_10.png')
 trigger_image = trigger_image.resize((5, 5))  # 确保图片大小为5x5
 trigger = np.array(trigger_image).transpose((2, 0, 1))  # 转换为numpy数组并调整维度顺序
 # trigger方式二 自定义数值 Define the trigger and target class
